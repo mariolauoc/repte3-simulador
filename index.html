@@ -950,49 +950,29 @@
       </div>
 
       <p style="font-size: 0.88rem; color: var(--text-main); margin-bottom: 12px;">
-        Per recollir en viu les respostes de tots els estudiants en un full de càlcul compartit de Google Drive:
+        Aquest simulador està configurat per defecte per enviar les respostes dels estudiants a la següent URL d'aplicació web:
       </p>
 
-      <ol style="font-size: 0.85rem; padding-left: 20px; color: var(--text-main); line-height: 1.6; margin-bottom: 14px;">
-        <li>Creeu un <strong>Google Sheet</strong> nou a Google Drive.</li>
-        <li>Aneu al menú <em>Extensions &gt; Apps Script</em>, esborreu el codi existent i enganxeu el següent:</li>
-      </ol>
-
-      <div class="code-box">function doPost(e) {
-  var lock = LockService.getScriptLock();
-  lock.tryLock(10000);
-  try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    var d = JSON.parse(e.postData.contents);
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(["Data/Hora", "Nom", "Correu", "Aula", "Puntuació", "Cas 1", "Cas 2", "Cas 3", "Cas 4", "Cas 5", "Cas 6"]);
-    }
-    sheet.appendRow([d.timestamp, d.studentName, d.studentEmail, d.studentGroup, d.score, d.answers[0], d.answers[1], d.answers[2], d.answers[3], d.answers[4], d.answers[5]]);
-    return ContentService.createTextOutput(JSON.stringify({result:"ok"})).setMimeType(ContentService.MimeType.JSON);
-  } finally {
-    lock.releaseLock();
-  }
-}</div>
-
-      <ol start="3" style="font-size: 0.85rem; padding-left: 20px; color: var(--text-main); line-height: 1.6;">
-        <li>Feu clic a <strong>Implementar &gt; Nova implementació</strong>.</li>
-        <li>Tipus: <em>Aplicació web</em>. A <strong>Qui té accés</strong>: seleccioneu <em>"Qualsevol persona" (Anyone)</em>.</li>
-        <li>Copieu el <strong>Web App URL</strong> resultant i enganxeu-lo aquí sota:</li>
-      </ol>
-
-      <div style="margin-top: 14px;">
-        <label class="form-label" for="inp-gas-url">URL de l'aplicació web (Google Apps Script):</label>
-        <input type="url" id="inp-gas-url" class="form-input" placeholder="https://script.google.com/macros/s/.../exec">
+      <div style="margin-top: 10px; margin-bottom: 14px;">
+        <label class="form-label" for="inp-gas-url">URL activa de Google Apps Script:</label>
+        <input type="url" id="inp-gas-url" class="form-input" style="font-size: 0.82rem; font-family: monospace;">
       </div>
+
+      <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px;">
+        ℹ️ <em>Nota:</em> Si en el futur voleu canviar de full de càlcul o assignatura, només cal que pegueu la nova URL aquí i feu clic a <strong>Desar URL</strong>.
+      </p>
 
       <div style="margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px;">
         <button type="button" class="btn btn-outline" onclick="closeTeacherModal()">Tancar</button>
-        <button type="button" class="btn btn-primary" onclick="saveGasUrl()">Desar URL</button>
+        <button type="button" class="btn btn-primary" onclick="saveGasUrl()">Desar Canvis</button>
       </div>
     </div>
   </div>
 
   <script>
+    /* URL DE GOOGLE APPS SCRIPT OFICIAL PER A L'ASSIGNATURA */
+    const DEFAULT_GAS_ENDPOINT = 'https://script.google.com/a/macros/uoc.edu/s/AKfycbwPpLs0ighrZUNy-5lFbBcMRqvyOykz28FOOADWwb8bBzGn-EmhiYpMmPvUOGw6SP03Fg/exec';
+
     /* DADES BILINGÜES COMPLETES EN JS */
     const translations = {
       cat: {
@@ -1275,7 +1255,7 @@
             ],
             correct: 1,
             explanation: "Un objetivo debe ser alcanzable y realista dentro de la capacidad de intervención de las relaciones públicas. No podemos prometer decisiones legislativas absolutas que dependen de terceros.",
-            corrected: "Incrementar la predisposición favorable de los portavoces parlamentarios de la Comisión de Sanidad y Juventud hacia la regulación del acceso digital de menores al juego, logrando que al menos 3 grupos parlamentarios incluyan las recomendaciones de FadJuventud en sus iniciativas antes de diciembre de 2026."
+            corrected: "Incrementar la predisposición favorable de los portaveus parlamentarios de la Comisión de Sanidad y Juventud hacia la regulación del acceso digital de menores al juego, logrando que al menos 3 grupos parlamentarios incluyan las recomendaciones de FadJuventud en sus iniciativas antes de diciembre de 2026."
           }
         ]
       }
@@ -1294,7 +1274,7 @@
       userAnswers: [null, null, null, null, null, null],
       isAudited: [false, false, false, false, false, false],
       isFinished: false,
-      gasEndpoint: localStorage.getItem('uoc_pr_gas_url') || '',
+      gasEndpoint: localStorage.getItem('uoc_pr_gas_url') || DEFAULT_GAS_ENDPOINT,
       syncStatus: 'idle'
     };
 
@@ -1589,7 +1569,8 @@
         fetch(state.gasEndpoint, {
           method: 'POST',
           mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
+          cache: 'no-cache',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         })
         .then(() => {
@@ -1667,7 +1648,7 @@
     /* MODAL DOCENT */
     function openTeacherModal() {
       document.getElementById('teacher-modal').classList.add('open');
-      document.getElementById('inp-gas-url').value = state.gasEndpoint || '';
+      document.getElementById('inp-gas-url').value = state.gasEndpoint || DEFAULT_GAS_ENDPOINT;
     }
 
     function closeTeacherModal() {
@@ -1675,7 +1656,7 @@
     }
 
     function saveGasUrl() {
-      const url = document.getElementById('inp-gas-url').value.trim();
+      const url = document.getElementById('inp-gas-url').value.trim() || DEFAULT_GAS_ENDPOINT;
       state.gasEndpoint = url;
       localStorage.setItem('uoc_pr_gas_url', url);
       closeTeacherModal();
