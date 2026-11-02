@@ -609,50 +609,6 @@
       margin-top: 4px;
     }
 
-    /* MODAL DOCENT PER CONFIGURAR GOOGLE SHEETS */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 80, 0.6);
-      backdrop-filter: blur(3px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      padding: 16px;
-    }
-
-    .modal-overlay.open {
-      display: flex;
-    }
-
-    .modal-content {
-      background: #FFFFFF;
-      max-width: 650px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow-lg);
-      position: relative;
-    }
-
-    .code-box {
-      background: #1E293B;
-      color: #F8FAFC;
-      padding: 12px;
-      border-radius: var(--radius-sm);
-      font-family: monospace;
-      font-size: 0.78rem;
-      overflow-x: auto;
-      margin: 10px 0;
-      white-space: pre;
-    }
-
     /* FOOTER */
     .footer {
       background-color: #FFFFFF;
@@ -777,12 +733,15 @@
           <div class="form-group">
             <label class="form-label" for="inp-student-group" id="lbl-group">Aula / Grup de l'assignatura *</label>
             <select class="form-select" id="inp-student-group" required>
-              <option value="" disabled selected id="opt-select-group">Selecciona la teva aula...</option>
-              <option value="Aula 1">Aula 1</option>
-              <option value="Aula 2">Aula 2</option>
-              <option value="Aula 3">Aula 3</option>
-              <option value="Aula 4">Aula 4</option>
-              <option value="Grup de Treball">Grup de Treball / Altres</option>
+              <option value="" disabled selected id="opt-select-group">Selecciona la teva aula i idioma...</option>
+              <optgroup label="Grup en català" id="optgroup-cat">
+                <option value="Aula 1 - Català" id="opt-cat-1">Aula 1 (Català)</option>
+                <option value="Aula 2 - Català" id="opt-cat-2">Aula 2 (Català)</option>
+              </optgroup>
+              <optgroup label="Grupo en castellano" id="optgroup-es">
+                <option value="Aula 1 - Castellano" id="opt-es-1">Aula 1 (Castellano)</option>
+                <option value="Aula 2 - Castellano" id="opt-es-2">Aula 2 (Castellano)</option>
+              </optgroup>
             </select>
           </div>
 
@@ -852,7 +811,8 @@
     <!-- PANTALLA 3: RESULTATS I MATRIU ESTRATÈGICA -->
     <section class="content-body results-view" id="results-view">
       <div class="score-summary-banner">
-        <div class="score-badge" id="score-number">6/6</div>
+        <div class="score-badge" id="score-number">10 / 10</div>
+        <div id="score-breakdown" style="font-size: 0.95rem; font-weight: 700; color: var(--uoc-blue); margin-bottom: 8px;">6 de 6 encerts (1,67 pts per cas)</div>
         <h2 class="main-title" style="color: var(--uoc-blue); margin-bottom: 8px;" id="ui-results-title">Auditoria Finalitzada amb Èxit</h2>
         <p class="score-feedback-text" id="score-comment">
           Has completat l'avaluació estratègica de totes les propostes de relacions públiques.
@@ -865,17 +825,7 @@
           <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
           <path d="M12 2a10 10 0 0 1 10 10"></path>
         </svg>
-        <span id="sync-message">Sincronitzant els teus resultats amb el Google Sheet de l'equip docent...</span>
-      </div>
-
-      <!-- BOTONS DE RESGUARD DE LES DADES -->
-      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <button type="button" class="btn btn-outline" onclick="downloadCSVReport()" style="font-size: 0.85rem; padding: 8px 14px;">
-          📥 <span id="btn-download-csv">Descarregar informe CSV (Excel / Sheets)</span>
-        </button>
-        <button type="button" class="btn btn-outline" onclick="copyDataForSheet()" style="font-size: 0.85rem; padding: 8px 14px;">
-          📋 <span id="btn-copy-tsv">Copiar línia per a Google Sheets</span>
-        </button>
+        <span id="sync-message">Sincronitzant els teus resultats amb el registre docent de l'assignatura...</span>
       </div>
 
       <!-- MATRIU RESUM DE VERIFICACIÓ ESTRATÈGICA -->
@@ -928,50 +878,15 @@
       <div>
         <span class="footer-brand">Universitat Oberta de Catalunya (UOC)</span> · <span id="footer-course">Planificació Estratègica de les Relacions Públiques</span>
       </div>
-      <div style="display: flex; align-items: center; gap: 14px;">
-        <button type="button" onclick="openTeacherModal()" style="background:none; border:none; color:var(--uoc-blue); cursor:pointer; font-size:0.78rem; text-decoration:underline; font-weight:700;" id="btn-teacher-setup">
-          ⚙️ Connexió Google Sheets (Docent)
-        </button>
-        <div id="footer-copyright">
-          Recurs d'aprenentatge interactiu per a LMS Canvas
-        </div>
+      <div id="footer-copyright">
+        Recurs d'aprenentatge interactiu per a LMS Canvas
       </div>
     </footer>
   </main>
 
-  <!-- MODAL DE CONFIGURACIÓ I GUIA PER ALS PROFESSORS (GOOGLE SHEETS) -->
-  <div class="modal-overlay" id="teacher-modal" role="dialog" aria-modal="true" aria-labelledby="modal-teacher-title">
-    <div class="modal-content">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-        <h3 id="modal-teacher-title" style="color: var(--uoc-blue); font-size: 1.15rem; font-weight: 800;">
-          Configuració del Google Sheet per al professorat
-        </h3>
-        <button type="button" onclick="closeTeacherModal()" style="background: none; border: none; font-size: 1.4rem; cursor: pointer;">&times;</button>
-      </div>
-
-      <p style="font-size: 0.88rem; color: var(--text-main); margin-bottom: 12px;">
-        Aquest simulador està configurat per defecte per enviar les respostes dels estudiants a la següent URL d'aplicació web:
-      </p>
-
-      <div style="margin-top: 10px; margin-bottom: 14px;">
-        <label class="form-label" for="inp-gas-url">URL activa de Google Apps Script:</label>
-        <input type="url" id="inp-gas-url" class="form-input" style="font-size: 0.82rem; font-family: monospace;">
-      </div>
-
-      <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px;">
-        ℹ️ <em>Nota:</em> Si en el futur voleu canviar de full de càlcul o assignatura, només cal que pegueu la nova URL aquí i feu clic a <strong>Desar URL</strong>.
-      </p>
-
-      <div style="margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px;">
-        <button type="button" class="btn btn-outline" onclick="closeTeacherModal()">Tancar</button>
-        <button type="button" class="btn btn-primary" onclick="saveGasUrl()">Desar Canvis</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    /* URL DE GOOGLE APPS SCRIPT OFICIAL PER A L'ASSIGNATURA */
-    const DEFAULT_GAS_ENDPOINT = 'https://script.google.com/a/macros/uoc.edu/s/AKfycbwPpLs0ighrZUNy-5lFbBcMRqvyOykz28FOOADWwb8bBzGn-EmhiYpMmPvUOGw6SP03Fg/exec';
+    /* URL DE GOOGLE APPS SCRIPT OFICIAL PER A L'ASSIGNATURA (AMB PERMISOS OBERTS) */
+    const DEFAULT_GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbylWY8o41zm3u1XYQq9Xuc1UezZpxxE2zxoHqoHmVZSMEKOTwK4ag5VbhhDpSLNnDPBHw/exec';
 
     /* DADES BILINGÜES COMPLETES EN JS */
     const translations = {
@@ -985,26 +900,30 @@
         lblEmail: "Correu de la UOC *",
         hintEmail: "Utilitza la teva adreça institucional de la universitat (@uoc.edu).",
         lblGroup: "Aula / Grup de l'assignatura *",
-        optSelectGroup: "Selecciona la teva aula...",
+        optSelectGroup: "Selecciona la teva aula i idioma...",
+        optGroupCat: "Grup en català",
+        optGroupEs: "Grup en castellà",
+        optCat1: "Aula 1 (Català)",
+        optCat2: "Aula 2 (Català)",
+        optEs1: "Aula 1 (Castellà)",
+        optEs2: "Aula 2 (Castellà)",
         btnStart: "Iniciar el Repte 3",
         proposalTag: "Proposta a auditar (Pla de l'estudiant)",
         caseLabel: "Cas",
         ofLabel: "de",
+        hitsLabel: "encerts",
+        ptsPerCase: "1,67 punts per cas",
         btnAudit: "Auditar resposta",
         btnNext: "Següent cas",
-        btnViewResults: "Veure resultats de l'auditoria",
+        btnViewResults: "Veure qualificació i resultats",
         btnRestart: "Reiniciar simulador",
-        btnDownloadCsv: "Descarregar informe CSV (Excel / Sheets)",
-        btnCopyTsv: "Copiar línia per a Google Sheets",
-        copiedToast: "✓ Línia copiada al porta-retalls!",
-        syncSending: "Sincronitzant els teus resultats amb el Google Sheet docent...",
-        syncSuccess: "✓ Resultats registrats correctament al Google Sheet compartit del professorat!",
-        syncFallback: "⚠️ Enregistrament local completat. Podeu descarregar l'informe CSV o copiar les dades per al Google Sheet.",
-        btnTeacherSetup: "⚙️ Connexió Google Sheets (Docent)",
+        syncSending: "Sincronitzant la teva qualificació amb el registre del professorat...",
+        syncSuccess: "✓ Qualificació i respostes registrades correctament al registre docent!",
+        syncFallback: "⚠️ L'auditoria ha finalitzat. Comprova que la teva aula i correu siguin correctes.",
         correctedLabel: "Versió Corregida Recomanada",
         correctHeader: "Correcte. Auditoria encertada!",
         incorrectHeader: "Incorrecte. Error detectat a l'auditoria:",
-        resultsTitle: "Auditoria Finalitzada amb Èxit",
+        resultsTitle: "Auditoria Finalitzada",
         matrixTitle: "Matriu Resum de Verificació Estratègica",
         matrixSubtitle: "Criteris d'auditoria permanent per a la planificació en relacions públiques:",
         footerCourse: "Planificació Estratègica de les Relacions Públiques",
@@ -1127,26 +1046,30 @@
         lblEmail: "Correo de la UOC *",
         hintEmail: "Utiliza tu dirección institucional de la universidad (@uoc.edu).",
         lblGroup: "Aula / Grupo de la asignatura *",
-        optSelectGroup: "Selecciona tu aula...",
+        optSelectGroup: "Selecciona tu aula e idioma...",
+        optGroupCat: "Grupo en catalán",
+        optGroupEs: "Grupo en castellano",
+        optCat1: "Aula 1 (Catalán)",
+        optCat2: "Aula 2 (Catalán)",
+        optEs1: "Aula 1 (Castellano)",
+        optEs2: "Aula 2 (Castellano)",
         btnStart: "Iniciar el Reto 3",
         proposalTag: "Propuesta a auditar (Plan del estudiante)",
         caseLabel: "Caso",
         ofLabel: "de",
+        hitsLabel: "aciertos",
+        ptsPerCase: "1,67 puntos por caso",
         btnAudit: "Auditar respuesta",
         btnNext: "Siguiente caso",
-        btnViewResults: "Ver resultados de la auditoría",
+        btnViewResults: "Ver calificación y resultados",
         btnRestart: "Reiniciar simulador",
-        btnDownloadCsv: "Descargar informe CSV (Excel / Sheets)",
-        btnCopyTsv: "Copiar fila para Google Sheets",
-        copiedToast: "✓ ¡Fila copiada al portapapeles!",
-        syncSending: "Sincronizando tus resultados con el Google Sheet docente...",
-        syncSuccess: "✓ ¡Resultados registrados correctamente en el Google Sheet compartido del profesorado!",
-        syncFallback: "⚠️ Registro local completado. Puedes descargar el informe CSV o copiar los datos para el Google Sheet.",
-        btnTeacherSetup: "⚙️ Conexión Google Sheets (Docente)",
+        syncSending: "Sincronizando tu calificación con el registro del profesorado...",
+        syncSuccess: "✓ ¡Calificación y respuestas registradas correctamente en el registro docente!",
+        syncFallback: "⚠️ La auditoría ha finalizado. Comprueba que tu aula y correo sean correctos.",
         correctedLabel: "Versión Corregida Recomendada",
         correctHeader: "¡Correcto! Auditoría acertada.",
         incorrectHeader: "Incorrecto. Error detectado en la auditoría:",
-        resultsTitle: "Auditoría Finalizada con Éxito",
+        resultsTitle: "Auditoría Finalizada",
         matrixTitle: "Matriz Resumen de Verificación Estratégica",
         matrixSubtitle: "Criterios de auditoría permanente para la planificación en relaciones públicas:",
         footerCourse: "Planificación Estratégica de las Relaciones Públicas",
@@ -1274,7 +1197,7 @@
       userAnswers: [null, null, null, null, null, null],
       isAudited: [false, false, false, false, false, false],
       isFinished: false,
-      gasEndpoint: localStorage.getItem('uoc_pr_gas_url') || DEFAULT_GAS_ENDPOINT,
+      gasEndpoint: DEFAULT_GAS_ENDPOINT,
       syncStatus: 'idle'
     };
 
@@ -1309,7 +1232,6 @@
       document.getElementById('ui-correction-label').textContent = t.correctedLabel;
       document.getElementById('footer-course').textContent = t.footerCourse;
       document.getElementById('footer-copyright').textContent = t.footerCopyright;
-      document.getElementById('btn-teacher-setup').textContent = t.btnTeacherSetup;
 
       // Welcome Screen Texts
       document.getElementById('welcome-title').textContent = t.welcomeTitle;
@@ -1319,11 +1241,13 @@
       document.getElementById('hint-email').textContent = t.hintEmail;
       document.getElementById('lbl-group').textContent = t.lblGroup;
       document.getElementById('opt-select-group').textContent = t.optSelectGroup;
+      document.getElementById('optgroup-cat').label = t.optGroupCat;
+      document.getElementById('optgroup-es').label = t.optGroupEs;
+      document.getElementById('opt-cat-1').textContent = t.optCat1;
+      document.getElementById('opt-cat-2').textContent = t.optCat2;
+      document.getElementById('opt-es-1').textContent = t.optEs1;
+      document.getElementById('opt-es-2').textContent = t.optEs2;
       document.getElementById('btn-start').querySelector('span').textContent = t.btnStart;
-
-      // Result screen sync buttons
-      document.getElementById('btn-download-csv').textContent = t.btnDownloadCsv;
-      document.getElementById('btn-copy-tsv').textContent = t.btnCopyTsv;
 
       // Table Headers
       document.getElementById('th-dim').textContent = t.thDim;
@@ -1510,13 +1434,18 @@
         }
       });
 
-      document.getElementById('score-number').textContent = `${correctCount}/${totalCases}`;
+      // PUNTUACIÓ SOBRE 10 PUNTS (10 / 6 = 1,666... per pregunta)
+      const rawScore = (correctCount / totalCases) * 10;
+      const scoreFormatted = (correctCount === totalCases) ? "10" : rawScore.toFixed(2).replace('.', ',');
+
+      document.getElementById('score-number').textContent = `${scoreFormatted} / 10`;
+      document.getElementById('score-breakdown').textContent = `${correctCount} ${t.ofLabel} ${totalCases} ${t.hitsLabel} (${t.ptsPerCase})`;
       document.getElementById('ui-results-title').textContent = t.resultsTitle;
 
       const commentEl = document.getElementById('score-comment');
       if (correctCount === totalCases) {
         commentEl.textContent = t.feedbackScoreExcellent;
-      } else if (correctCount >= 4) {
+      } else if (rawScore >= 6.5) {
         commentEl.textContent = t.feedbackScoreGood;
       } else {
         commentEl.textContent = t.feedbackScoreReview;
@@ -1552,12 +1481,16 @@
       });
 
       const totalCorrect = state.userAnswers.filter((ans, idx) => ans === translations.cat.cases[idx].correct).length;
+      const rawScore = (totalCorrect / translations.cat.cases.length) * 10;
+      const scoreFormatted = (totalCorrect === translations.cat.cases.length) ? "10,00" : rawScore.toFixed(2).replace('.', ',');
+
       const payload = {
         timestamp: new Date().toLocaleString('ca-ES'),
         studentName: state.student.name,
         studentEmail: state.student.email,
         studentGroup: state.student.group,
-        score: `${totalCorrect}/6`,
+        score: `${scoreFormatted} / 10 (${totalCorrect}/6 encerts)`,
+        grade: Number(rawScore.toFixed(2)),
         answers: answersSummary
       };
 
@@ -1587,81 +1520,6 @@
         banner.className = 'sync-status-box sync-fallback';
         spinner.style.display = 'none';
         message.textContent = t.syncFallback;
-      }
-    }
-
-    /* DESCARREGAR INFORME CSV DIRECTE PER A GOOGLE SHEETS / EXCEL */
-    function downloadCSVReport() {
-      const letters = ['A', 'B', 'C'];
-      const totalCorrect = state.userAnswers.filter((ans, idx) => ans === translations.cat.cases[idx].correct).length;
-      const headers = ["Data", "Nom i Cognoms", "Correu UOC", "Aula/Grup", "Puntuació", "Cas 1", "Cas 2", "Cas 3", "Cas 4", "Cas 5", "Cas 6"];
-      const row = [
-        `"${new Date().toLocaleString('ca-ES')}"`,
-        `"${state.student.name}"`,
-        `"${state.student.email}"`,
-        `"${state.student.group}"`,
-        `"${totalCorrect}/6"`,
-        ...state.userAnswers.map((ans, i) => `"${letters[ans]} (${ans === translations.cat.cases[i].correct ? 'OK' : 'ERR'})"`)
-      ];
-
-      const csvContent = "\uFEFF" + headers.join(",") + "\n" + row.join(",");
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", `Repte3_${state.student.name.replace(/\s+/g, '_')}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    /* COPIAR LÍNIA TABULADA PER ENGANXAR DIRECTAMENT EN GOOGLE SHEETS */
-    function copyDataForSheet() {
-      const letters = ['A', 'B', 'C'];
-      const totalCorrect = state.userAnswers.filter((ans, idx) => ans === translations.cat.cases[idx].correct).length;
-      const values = [
-        new Date().toLocaleString('ca-ES'),
-        state.student.name,
-        state.student.email,
-        state.student.group,
-        `${totalCorrect}/6`,
-        ...state.userAnswers.map((ans, i) => `${letters[ans]} (${ans === translations.cat.cases[i].correct ? 'OK' : 'ERR'})`)
-      ];
-
-      const tsv = values.join("\t");
-      const tempTextarea = document.createElement('textarea');
-      tempTextarea.value = tsv;
-      document.body.appendChild(tempTextarea);
-      tempTextarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(tempTextarea);
-
-      const t = translations[state.lang];
-      const copyBtn = document.getElementById('btn-copy-tsv');
-      const originalText = copyBtn.textContent;
-      copyBtn.textContent = t.copiedToast;
-      setTimeout(() => {
-        copyBtn.textContent = originalText;
-      }, 2500);
-    }
-
-    /* MODAL DOCENT */
-    function openTeacherModal() {
-      document.getElementById('teacher-modal').classList.add('open');
-      document.getElementById('inp-gas-url').value = state.gasEndpoint || DEFAULT_GAS_ENDPOINT;
-    }
-
-    function closeTeacherModal() {
-      document.getElementById('teacher-modal').classList.remove('open');
-    }
-
-    function saveGasUrl() {
-      const url = document.getElementById('inp-gas-url').value.trim() || DEFAULT_GAS_ENDPOINT;
-      state.gasEndpoint = url;
-      localStorage.setItem('uoc_pr_gas_url', url);
-      closeTeacherModal();
-      if (state.isFinished) {
-        sendDataToGoogleSheet();
       }
     }
 
