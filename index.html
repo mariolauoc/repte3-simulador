@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repte 3 - Simulador de reptes, objectius i públics | UOC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* VARIABLES CORPORATIVES UOC */
+    :root {
+      --uoc-blue: #000078;
+      --uoc-blue-hover: #00005a;
+      --uoc-cyan: #00C2DE;
+      --uoc-cyan-light: #EBFBFF;
+      --uoc-cyan-border: #73EDFF;
+      --bg-page: #F4F6F8;
+      --bg-card: #FFFFFF;
+      --text-main: #111111;
+      --text-muted: #555555;
+      --color-success: #1E7E34;
+      --bg-success: #E8F5E9;
+      --border-success: #A3D9A5;
+      --color-error: #BD2130;
+      --bg-error: #FDF2F2;
+      --border-error: #F5C6CB;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 2px 4px rgba(0, 0, 120, 0.06);
+      --shadow-md: 0 4px 12px rgba(0, 0, 120, 0.08);
+      --shadow-lg: 0 10px 25px rgba(0, 0, 120, 0.12);
+      --transition: all 0.25s ease-in-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 860px;
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid #E2E8F0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER CORPORATIU UOC */
+    .header {
+      background-color: var(--uoc-blue);
+      color: #FFFFFF;
+      padding: 24px 28px 20px;
+      position: relative;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 16px;
+    }
+
+    .uoc-brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--uoc-cyan-border);
+    }
+
+    .uoc-brand-badge svg {
+      fill: var(--uoc-cyan);
+    }
+
+    /* TOGGLE BILINGÜE */
+    .lang-switcher {
+      display: inline-flex;
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: #FFFFFF;
+      padding: 4px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .lang-btn.active {
+      background-color: var(--uoc-cyan);
+      color: var(--uoc-blue);
+    }
+
+    .lang-btn:hover:not(.active) {
+      background-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .main-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.92rem;
+      color: #E2E8F0;
+      font-weight: 400;
+    }
+
+    /* BARRA DE DADES DE L'ESTUDIANT */
+    .student-badge-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background-color: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-sm);
+      padding: 8px 14px;
+      margin-top: 12px;
+      font-size: 0.84rem;
+      color: #F8FAFC;
+    }
+
+    .student-badge-bar.show {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* PROGRESS TRACK */
+    .progress-section {
+      margin-top: 16px;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--uoc-cyan-border);
+      margin-bottom: 6px;
+    }
+
+    .progress-bar-bg {
+      background-color: rgba(255, 255, 255, 0.2);
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      background-color: var(--uoc-cyan);
+      height: 100%;
+      width: 16.66%;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* CONTENT BODY */
+    .content-body {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* TARGETA DE FORMULARI */
+    .form-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+    }
+
+    .form-label {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--uoc-blue);
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #CBD5E1;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: var(--transition);
+      background-color: #fff;
+    }
+
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--uoc-blue);
+      box-shadow: 0 0 0 3px rgba(0, 194, 222, 0.25);
+    }
+
+    .form-hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* PROPOSTA TRAMPA */
+    .trap-card {
+      background-color: var(--uoc-cyan-light);
+      border-left: 5px solid var(--uoc-blue);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 18px 20px;
+      position: relative;
+    }
+
+    .tag-audit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--uoc-blue);
+      background-color: rgba(0, 0, 120, 0.08);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+    }
+
+    .case-quote {
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--text-main);
+      font-weight: 500;
+      line-height: 1.55;
+    }
+
+    /* PREGUNTA */
+    .question-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--uoc-blue);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* OPCIONS D'AUDITORIA */
+    .options-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 2px solid #E2E8F0;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+      background-color: #FFFFFF;
+      text-align: left;
+    }
+
+    .option-item:hover:not(.disabled) {
+      border-color: var(--uoc-cyan);
+      background-color: #F8FDFF;
+      transform: translateY(-1px);
+    }
+
+    .option-item.selected {
+      border-color: var(--uoc-blue);
+      background-color: #F0F4FF;
+    }
+
+    .option-item.disabled {
+      cursor: default;
+      opacity: 0.9;
+    }
+
+    .option-item input[type="radio"] {
+      margin-top: 3px;
+      accent-color: var(--uoc-blue);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .option-label {
+      font-size: 0.95rem;
+      line-height: 1.45;
+      color: var(--text-main);
+    }
+
+    .option-letter {
+      font-weight: 700;
+      color: var(--uoc-blue);
+      margin-right: 4px;
+    }
+
+    /* RETROALIMENTACIÓ */
+    .feedback-card {
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-top: 6px;
+      animation: fadeIn 0.35s ease-out forwards;
+      display: none;
+    }
+
+    .feedback-card.show {
+      display: block;
+    }
+
+    .feedback-card.correct {
+      background-color: var(--bg-success);
+      border: 1px solid var(--border-success);
+      border-left: 5px solid var(--color-success);
+    }
+
+    .feedback-card.incorrect {
+      background-color: var(--bg-error);
+      border: 1px solid var(--border-error);
+      border-left: 5px solid var(--color-error);
+    }
+
+    .feedback-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .feedback-card.correct .feedback-status {
+      color: var(--color-success);
+    }
+
+    .feedback-card.incorrect .feedback-status {
+      color: var(--color-error);
+    }
+
+    .feedback-text {
+      font-size: 0.93rem;
+      color: var(--text-main);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    /* CAIXA DE PROPOSTA CORREGIDA */
+    .corrected-box {
+      background-color: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-left: 4px solid var(--uoc-cyan);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-top: 10px;
+    }
+
+    .corrected-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--uoc-blue);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .corrected-content {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #0F172A;
+      line-height: 1.45;
+    }
+
+    /* BOTONS D'ACCIÓ */
+    .actions-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 24px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--uoc-blue);
+      color: #FFFFFF;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--uoc-blue-hover);
+      box-shadow: 0 4px 8px rgba(0, 0, 120, 0.2);
+    }
+
+    .btn-primary:disabled {
+      background-color: #94A3B8;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .btn-outline {
+      background-color: #FFFFFF;
+      color: var(--uoc-blue);
+      border: 2px solid var(--uoc-blue);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--uoc-cyan-light);
+    }
+
+    /* PANTALLA FINAL */
+    .results-view {
+      display: none;
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    .results-view.show {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .score-summary-banner {
+      background: linear-gradient(135deg, var(--uoc-cyan-light) 0%, #FFFFFF 100%);
+      border: 2px solid var(--uoc-cyan-border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      text-align: center;
+    }
+
+    .score-badge {
+      display: inline-block;
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--uoc-blue);
+      margin-bottom: 6px;
+    }
+
+    .score-feedback-text {
+      font-size: 1.05rem;
+      color: var(--text-main);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* STATUS BANNER GOOGLE SHEETS */
+    .sync-status-box {
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .sync-loading {
+      background-color: #EFF6FF;
+      color: #1E40AF;
+      border: 1px solid #BFDBFE;
+    }
+
+    .sync-success {
+      background-color: var(--bg-success);
+      color: var(--color-success);
+      border: 1px solid var(--border-success);
+    }
+
+    .sync-fallback {
+      background-color: #FFFBEB;
+      color: #B45309;
+      border: 1px solid #FDE68A;
+    }
+
+    /* MATRIU DE VERIFICACIÓ */
+    .matrix-section {
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: var(--radius-md);
+      padding: 20px;
+    }
+
+    .matrix-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--uoc-blue);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .matrix-subtitle {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .matrix-table-container {
+      overflow-x: auto;
+      border-radius: var(--radius-sm);
+      border: 1px solid #E2E8F0;
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+      text-align: left;
+    }
+
+    .matrix-table th {
+      background-color: var(--uoc-blue);
+      color: #FFFFFF;
+      padding: 12px 14px;
+      font-weight: 700;
+    }
+
+    .matrix-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #E2E8F0;
+      vertical-align: top;
+      line-height: 1.45;
+    }
+
+    .matrix-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .matrix-table tr:nth-child(even) td {
+      background-color: #F8FAFC;
+    }
+
+    .matrix-table tr:hover td {
+      background-color: var(--uoc-cyan-light);
+    }
+
+    .pill-dimension {
+      font-weight: 700;
+      color: var(--uoc-blue);
+      white-space: nowrap;
+    }
+
+    .pill-formula {
+      display: inline-block;
+      background-color: #E2E8F0;
+      color: #1E293B;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.82rem;
+      margin-top: 4px;
+    }
+
+    /* MODAL DOCENT PER CONFIGURAR GOOGLE SHEETS */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 80, 0.6);
+      backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 16px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #FFFFFF;
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+
+    .code-box {
+      background: #1E293B;
+      color: #F8FAFC;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-family: monospace;
+      font-size: 0.78rem;
+      overflow-x: auto;
+      margin: 10px 0;
+      white-space: pre;
+    }
+
+    /* FOOTER */
+    .footer {
+      background-color: #FFFFFF;
+      border-top: 1px solid #E2E8F0;
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .footer-brand {
+      font-weight: 700;
+      color: var(--uoc-blue);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin { 
+      100% { transform: rotate(360deg); } 
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      body {
+        padding: 8px;
+      }
+      .header {
+        padding: 18px 20px 16px;
+      }
+      .content-body {
+        padding: 18px;
+        gap: 16px;
+      }
+      .main-title {
+        font-size: 1.15rem;
+      }
+      .actions-bar {
+        flex-direction: column;
+        width: 100%;
+      }
+      .btn {
+        width: 100%;
+      }
+      .footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="app-container" role="region" aria-label="Simulador d'Auditoria Estratègica de Relacions Públiques">
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-top">
+        <div class="uoc-brand-badge">
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <span id="badge-text">UOC · Grau de Comunicació</span>
+        </div>
+
+        <!-- BILINGUAL SELECTOR -->
+        <div class="lang-switcher" role="group" aria-label="Selecció d'idioma">
+          <button type="button" class="lang-btn active" id="btn-lang-cat" onclick="switchLanguage('cat')">CAT</button>
+          <button type="button" class="lang-btn" id="btn-lang-es" onclick="switchLanguage('es')">ES</button>
+        </div>
+      </div>
+
+      <h1 class="main-title" id="ui-main-title">Repte 3 - Simulador de reptes, objectius i públics</h1>
+      <p class="subtitle" id="ui-subtitle">Simulador d'Auditoria Estratègica i Verificació Metodològica</p>
+
+      <!-- BARRA DE L'ESTUDIANT IDENTIFICAT -->
+      <div class="student-badge-bar" id="student-info-bar">
+        <span>👤 <strong id="student-name-display">Estudiant</strong> (<span id="student-group-display">Aula</span>)</span>
+        <span style="font-size: 0.78rem; opacity: 0.9;" id="student-email-display">correu@uoc.edu</span>
+      </div>
+
+      <!-- PROGRESS TRACK -->
+      <div class="progress-section" id="progress-container" style="display: none;">
+        <div class="progress-labels">
+          <span id="progress-text">Cas 1 de 6</span>
+          <span id="progress-percentage">16%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill-bar" style="width: 16.66%;"></div>
+        </div>
+      </div>
+      <div id="aria-progress" class="sr-only" role="progressbar" aria-valuenow="16" aria-valuemin="0" aria-valuemax="100" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0);"></div>
+    </header>
+
+    <!-- PANTALLA 1: FORMULARI INICIAL D'IDENTIFICACIÓ -->
+    <section class="content-body" id="welcome-view">
+      <div class="form-card">
+        <h2 style="color: var(--uoc-blue); font-size: 1.25rem; font-weight: 800; margin-bottom: 6px;" id="welcome-title">
+          Registre d'inici de l'auditoria
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;" id="welcome-desc">
+          Abans de començar el simulador, introdueix les teves dades d'estudiant. Les teves respostes quedaran registrades per a l'equip docent de l'assignatura.
+        </p>
+
+        <form id="student-form" onsubmit="handleStartSimulation(event)">
+          <div class="form-group">
+            <label class="form-label" for="inp-student-name" id="lbl-name">Nom i cognoms *</label>
+            <input type="text" class="form-input" id="inp-student-name" required placeholder="Ex. Maria Garcia Pérez">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inp-student-email" id="lbl-email">Correu de la UOC *</label>
+            <input type="email" class="form-input" id="inp-student-email" required placeholder="mgarciap@uoc.edu" pattern="[a-zA-Z0-9._%+-]+@uoc\.edu$" title="Cal introduir una adreça @uoc.edu">
+            <span class="form-hint" id="hint-email">Utilitza la teva adreça institucional de la universitat (@uoc.edu).</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inp-student-group" id="lbl-group">Aula / Grup de l'assignatura *</label>
+            <select class="form-select" id="inp-student-group" required>
+              <option value="" disabled selected id="opt-select-group">Selecciona la teva aula...</option>
+              <option value="Aula 1">Aula 1</option>
+              <option value="Aula 2">Aula 2</option>
+              <option value="Aula 3">Aula 3</option>
+              <option value="Aula 4">Aula 4</option>
+              <option value="Grup de Treball">Grup de Treball / Altres</option>
+            </select>
+          </div>
+
+          <div style="margin-top: 24px; display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn btn-primary" id="btn-start">
+              <span>Iniciar el Repte 3</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- PANTALLA 2: CAS ACTIU D'AUDITORIA -->
+    <section class="content-body" id="case-view" style="display: none;">
+      <!-- QUOTE TRAMPA -->
+      <div class="trap-card">
+        <span class="tag-audit" id="ui-proposal-tag">Proposta a auditar (Pla de l'estudiant)</span>
+        <blockquote class="case-quote" id="case-quote">
+          "Nuestra meta es erradicar el juego de azar..."
+        </blockquote>
+      </div>
+
+      <!-- AUDIT QUESTION & OPTIONS -->
+      <div>
+        <h2 class="question-title" id="case-question">
+          ¿Por qué esta meta es incorrecta desde el punto de vista de la planificación estratégica de relaciones públicas?
+        </h2>
+
+        <div class="options-group" id="options-container" role="radiogroup" aria-labelledby="case-question">
+          <!-- Les opcions es renderitzen dinàmicament via JS -->
+        </div>
+      </div>
+
+      <!-- FEEDBACK PANEL -->
+      <div class="feedback-card" id="feedback-panel" aria-live="polite">
+        <div class="feedback-status" id="feedback-title">
+          <!-- Icon + Verdict -->
+        </div>
+        <p class="feedback-text" id="feedback-desc"></p>
+
+        <!-- VERSIÓ CORREGIDA RECOMANADA -->
+        <div class="corrected-box">
+          <div class="corrected-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span id="ui-correction-label">Versió Corregida Recomanada</span>
+          </div>
+          <div class="corrected-content" id="feedback-correction"></div>
+        </div>
+      </div>
+
+      <!-- BOTÓ D'ACCIÓ -->
+      <div class="actions-bar">
+        <button type="button" class="btn btn-primary" id="btn-next-action" onclick="handlePrimaryAction()" disabled>
+          <span id="btn-action-text">Auditar resposta</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- PANTALLA 3: RESULTATS I MATRIU ESTRATÈGICA -->
+    <section class="content-body results-view" id="results-view">
+      <div class="score-summary-banner">
+        <div class="score-badge" id="score-number">6/6</div>
+        <h2 class="main-title" style="color: var(--uoc-blue); margin-bottom: 8px;" id="ui-results-title">Auditoria Finalitzada amb Èxit</h2>
+        <p class="score-feedback-text" id="score-comment">
+          Has completat l'avaluació estratègica de totes les propostes de relacions públiques.
+        </p>
+      </div>
+
+      <!-- ESTAT DE SINCRONITZACIÓ AMB GOOGLE SHEETS -->
+      <div class="sync-status-box sync-loading" id="sync-status-banner">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="sync-spinner" style="animation: spin 1.2s linear infinite;">
+          <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+          <path d="M12 2a10 10 0 0 1 10 10"></path>
+        </svg>
+        <span id="sync-message">Sincronitzant els teus resultats amb el Google Sheet de l'equip docent...</span>
+      </div>
+
+      <!-- BOTONS DE RESGUARD DE LES DADES -->
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button type="button" class="btn btn-outline" onclick="downloadCSVReport()" style="font-size: 0.85rem; padding: 8px 14px;">
+          📥 <span id="btn-download-csv">Descarregar informe CSV (Excel / Sheets)</span>
+        </button>
+        <button type="button" class="btn btn-outline" onclick="copyDataForSheet()" style="font-size: 0.85rem; padding: 8px 14px;">
+          📋 <span id="btn-copy-tsv">Copiar línia per a Google Sheets</span>
+        </button>
+      </div>
+
+      <!-- MATRIU RESUM DE VERIFICACIÓ ESTRATÈGICA -->
+      <div class="matrix-section">
+        <h3 class="matrix-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span id="ui-matrix-title">Matriu Resum de Verificació Estratègica</span>
+        </h3>
+        <p class="matrix-subtitle" id="ui-matrix-subtitle">
+          Criteris d'auditoria permanent per a la planificació en relacions públiques:
+        </p>
+
+        <div class="matrix-table-container">
+          <table class="matrix-table">
+            <thead>
+              <tr>
+                <th style="width: 20%;" id="th-dim">Dimensió</th>
+                <th style="width: 30%;" id="th-rule">Regla d'Or Metodològica</th>
+                <th style="width: 25%;" id="th-error">Error Freqüent a Evitar</th>
+                <th style="width: 25%;" id="th-formula">Fórmula / Estructura Vàlida</th>
+              </tr>
+            </thead>
+            <tbody id="matrix-body">
+              <!-- Renderitzat via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- BOTÓ PER REINICIAR -->
+      <div style="display: flex; justify-content: center; margin-top: 8px;">
+        <button type="button" class="btn btn-outline" onclick="restartSimulator()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          <span id="ui-btn-restart">Reiniciar simulador</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div>
+        <span class="footer-brand">Universitat Oberta de Catalunya (UOC)</span> · <span id="footer-course">Planificació Estratègica de les Relacions Públiques</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <button type="button" onclick="openTeacherModal()" style="background:none; border:none; color:var(--uoc-blue); cursor:pointer; font-size:0.78rem; text-decoration:underline; font-weight:700;" id="btn-teacher-setup">
+          ⚙️ Connexió Google Sheets (Docent)
+        </button>
+        <div id="footer-copyright">
+          Recurs d'aprenentatge interactiu per a LMS Canvas
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- MODAL DE CONFIGURACIÓ I GUIA PER ALS PROFESSORS (GOOGLE SHEETS) -->
+  <div class="modal-overlay" id="teacher-modal" role="dialog" aria-modal="true" aria-labelledby="modal-teacher-title">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 id="modal-teacher-title" style="color: var(--uoc-blue); font-size: 1.15rem; font-weight: 800;">
+          Configuració del Google Sheet per al professorat
+        </h3>
+        <button type="button" onclick="closeTeacherModal()" style="background: none; border: none; font-size: 1.4rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <p style="font-size: 0.88rem; color: var(--text-main); margin-bottom: 12px;">
+        Per recollir en viu les respostes de tots els estudiants en un full de càlcul compartit de Google Drive:
+      </p>
+
+      <ol style="font-size: 0.85rem; padding-left: 20px; color: var(--text-main); line-height: 1.6; margin-bottom: 14px;">
+        <li>Creeu un <strong>Google Sheet</strong> nou a Google Drive.</li>
+        <li>Aneu al menú <em>Extensions &gt; Apps Script</em>, esborreu el codi existent i enganxeu el següent:</li>
+      </ol>
+
+      <div class="code-box">function doPost(e) {
+  var lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var d = JSON.parse(e.postData.contents);
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(["Data/Hora", "Nom", "Correu", "Aula", "Puntuació", "Cas 1", "Cas 2", "Cas 3", "Cas 4", "Cas 5", "Cas 6"]);
+    }
+    sheet.appendRow([d.timestamp, d.studentName, d.studentEmail, d.studentGroup, d.score, d.answers[0], d.answers[1], d.answers[2], d.answers[3], d.answers[4], d.answers[5]]);
+    return ContentService.createTextOutput(JSON.stringify({result:"ok"})).setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
+}</div>
+
+      <ol start="3" style="font-size: 0.85rem; padding-left: 20px; color: var(--text-main); line-height: 1.6;">
+        <li>Feu clic a <strong>Implementar &gt; Nova implementació</strong>.</li>
+        <li>Tipus: <em>Aplicació web</em>. A <strong>Qui té accés</strong>: seleccioneu <em>"Qualsevol persona" (Anyone)</em>.</li>
+        <li>Copieu el <strong>Web App URL</strong> resultant i enganxeu-lo aquí sota:</li>
+      </ol>
+
+      <div style="margin-top: 14px;">
+        <label class="form-label" for="inp-gas-url">URL de l'aplicació web (Google Apps Script):</label>
+        <input type="url" id="inp-gas-url" class="form-input" placeholder="https://script.google.com/macros/s/.../exec">
+      </div>
+
+      <div style="margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn btn-outline" onclick="closeTeacherModal()">Tancar</button>
+        <button type="button" class="btn btn-primary" onclick="saveGasUrl()">Desar URL</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* DADES BILINGÜES COMPLETES EN JS */
+    const translations = {
+      cat: {
+        badge: "UOC · Grau de Comunicació",
+        mainTitle: "Repte 3 - Simulador de reptes, objectius i públics",
+        subtitle: "Simulador d'Auditoria Estratègica i Verificació Metodològica",
+        welcomeTitle: "Registre d'inici de l'auditoria",
+        welcomeDesc: "Abans de començar el simulador, introdueix les teves dades d'estudiant. Les teves respostes quedaran registrades per a l'equip docent de l'assignatura.",
+        lblName: "Nom i cognoms *",
+        lblEmail: "Correu de la UOC *",
+        hintEmail: "Utilitza la teva adreça institucional de la universitat (@uoc.edu).",
+        lblGroup: "Aula / Grup de l'assignatura *",
+        optSelectGroup: "Selecciona la teva aula...",
+        btnStart: "Iniciar el Repte 3",
+        proposalTag: "Proposta a auditar (Pla de l'estudiant)",
+        caseLabel: "Cas",
+        ofLabel: "de",
+        btnAudit: "Auditar resposta",
+        btnNext: "Següent cas",
+        btnViewResults: "Veure resultats de l'auditoria",
+        btnRestart: "Reiniciar simulador",
+        btnDownloadCsv: "Descarregar informe CSV (Excel / Sheets)",
+        btnCopyTsv: "Copiar línia per a Google Sheets",
+        copiedToast: "✓ Línia copiada al porta-retalls!",
+        syncSending: "Sincronitzant els teus resultats amb el Google Sheet docent...",
+        syncSuccess: "✓ Resultats registrats correctament al Google Sheet compartit del professorat!",
+        syncFallback: "⚠️ Enregistrament local completat. Podeu descarregar l'informe CSV o copiar les dades per al Google Sheet.",
+        btnTeacherSetup: "⚙️ Connexió Google Sheets (Docent)",
+        correctedLabel: "Versió Corregida Recomanada",
+        correctHeader: "Correcte. Auditoria encertada!",
+        incorrectHeader: "Incorrecte. Error detectat a l'auditoria:",
+        resultsTitle: "Auditoria Finalitzada amb Èxit",
+        matrixTitle: "Matriu Resum de Verificació Estratègica",
+        matrixSubtitle: "Criteris d'auditoria permanent per a la planificació en relacions públiques:",
+        footerCourse: "Planificació Estratègica de les Relacions Públiques",
+        footerCopyright: "Recurs d'aprenentatge interactiu per a LMS Canvas",
+        thDim: "Dimensió",
+        thRule: "Regla d'Or Metodològica",
+        thError: "Error Freqüent a Evitar",
+        thFormula: "Fórmula / Estructura Vàlida",
+        feedbackScoreExcellent: "Excel·lent criteri auditor! Domines plenament la diferència entre metes, impactes, producció i segmentació.",
+        feedbackScoreGood: "Bon treball d'auditoria. Revisa la matriu de verificació per polir els matisos entre acció del comunicador i efecte en el públic.",
+        feedbackScoreReview: "Cal repassar la teoria bàsica. Fixa't especialment en no confondre objectius de producció amb efectes d'impacte SMART.",
+        matrixRows: [
+          {
+            dim: "Meta Estratègica",
+            rule: "Sintetitza en una sola frase, en futur simple, la condició última i abstracta d'èxit de l'organització.",
+            error: "Incloure llistes d'accions (tècniques) o prometre resultats absoluts ('erradicar').",
+            formula: "[Subjecte/Entitat] + es consolidarà com a + [Estat desitjat d'excel·lència/posicionament]"
+          },
+          {
+            dim: "Objectius d'Impacte (Outcomes)",
+            rule: "Mesuren l'efecte que s'esdevé EN el públic (nivell cognitiu, afectiu o conatiu).",
+            error: "Utilitzar verbs que indiquen tasca del comunicador (dissenyar, llançar, fomentar, promoure).",
+            formula: "Infinitiu mesurable + Públic específic + Mètrica SMART + Termini + Propòsit ('per a')"
+          },
+          {
+            dim: "Objectius de Producció (Outputs)",
+            rule: "Quantifiquen les tasques i materials realitzats directament per l'equip de relacions públiques.",
+            error: "Confondre l'esforç i les publicacions realitzades amb el canvi d'actitud o conducta social.",
+            formula: "Realitzar / Difondre + [Nombre de peces/accions] + [Canal/Format] + [Termini]"
+          },
+          {
+            dim: "Segmentació de Públics",
+            rule: "Jerarquització de col·lectius vinculats per relació i risc (prioritaris, secundaris, intermediaris).",
+            error: "Recórrer a 'la societat en general' o masses amorfes sense context relacional.",
+            formula: "Grup específic + Franja demogràfica/Context + Nivell de risc o rol relacional"
+          }
+        ],
+        cases: [
+          {
+            quote: "La nostra meta és erradicar el joc d'atzar en els joves espanyols mitjançant la realització de xerrades en instituts, el disseny de fullets i la creació d'un perfil de TikTok durant els 8 mesos de campanya.",
+            question: "Per què aquesta meta és incorrecta des del punt de vista de la planificació estratègica de relacions públiques?",
+            options: [
+              "És correcta perquè detalla les accions que es duran a terme en la campanya.",
+              "És incorrecta perquè és massa modesta per a una campanya de 8 mesos.",
+              "És incorrecta perquè confon la meta amb els objectius de producció i promet un resultat que la comunicació no pot garantir per si sola."
+            ],
+            correct: 2,
+            explanation: "La meta ha de sintetitzar en una sola frase, en futur simple, la condició última i abstracta a la qual aspira el projecte. No ha d'incloure llistes d'activitats (objectius de producció) ni promeses absolutes com 'erradicar'.",
+            corrected: "FadJuventud es consolidarà com l'entitat de referència en la protecció dels menors davant les addiccions comportamentals, aconseguint que el joc d'atzar sigui percebut pels adolescents espanyols com una pràctica de gran risc i incompatible amb un oci saludable."
+          },
+          {
+            quote: "Objectiu d'impacte 1 (Cognitiu): Dissenyar i difondre 50 infografies educatives a Instagram i TikTok sobre els riscos de les apostes esportives per informar els adolescents.",
+            question: "Quin error metodològic comet aquest enunciat?",
+            options: [
+              "Ha redactat un objectiu de producció creient que és d'impacte, responent al que fa el comunicador i no a l'efecte en el públic.",
+              "L'únic error és que li falta indicar el pressupost necessari.",
+              "Està bé formulat perquè inclou una xifra (50 infografies)."
+            ],
+            correct: 0,
+            explanation: "Dissenyar i difondre continguts són tasques executives de l'equip de RR. PP. (objectius de producció / outputs). L'objectiu d'impacte (outcome) mesura el canvi que es produeix en el públic (coneixement, actitud o conducta).",
+            corrected: "Incrementar en un 30 % el coneixement dels nois adolescents (14-18 anys) sobre la nul·la rendibilitat estadística de les apostes esportives abans de novembre de 2026, amb el propòsit que reconeguin el joc com una despesa i no com una inversió."
+          },
+          {
+            quote: "Objectiu d'impacte 2 (Afectiu): Fomentar una actitud crítica cap a les cases d'apostes entre els estudiants de secundària abans de desembre de 2026.",
+            question: "Per què la teoria de l'assignatura desaconsella l'ús del verb 'fomentar' en els objectius d'impacte?",
+            options: [
+              "Perquè és un verb massa tècnic per a relacions públiques.",
+              "Perquè 'fomentar' al·ludeix a una acció que realitza el professional i es donarà per complerta encara que el públic no canviï la seva actitud.",
+              "Perquè els objectius afectius només poden usar el verb 'sensibilitzar'."
+            ],
+            correct: 1,
+            explanation: "Verbs com fomentar, promoure o propiciar emmascaren activitats del comunicador. Cal usar un verb que mesuri el resultat assolit en el públic (ex. generar rebuig, reduir la percepció positiva).",
+            corrected: "Generar una actitud de rebuig o distància crítica cap a l'estètica dels diners fàcils en almenys el 35 % dels adolescents varons abans de novembre de 2026, amb el propòsit de desnormalitzar les apostes en el seu entorn d'oci."
+          },
+          {
+            quote: "Objectiu d'impacte 3 (Conatiu): Aconseguir que els adolescents deixin de jugar a les màquines escurabutxaques i ruletes online.",
+            question: "Quins elements obligatoris falten en aquesta redacció perquè sigui un objectiu estratègicament vàlid i avaluable?",
+            options: [
+              "Li falta indicar la xarxa social on es publicarà la campanya.",
+              "Li falta el propòsit ('per a què'), la quantificació/mètrica SMART i l'acotació temporal.",
+              "Està complet, ja que indica el verb i el públic."
+            ],
+            correct: 1,
+            explanation: "Qualsevol objectiu d'impacte ha de complir la fórmula: Acció (Infinitiu) + Públic + Propòsit (Per a què) + Temporalització + Quantificació (SMART).",
+            corrected: "Aconseguir que almenys el 15 % dels adolescents masculins que juguen habitualment redueixin o abandonin el consum de joc online durant el període de campanya (maig-desembre 2026), amb el propòsit de disminuir les conductes de risc."
+          },
+          {
+            quote: "Públic prioritari del pla: La societat en general, perquè l'addicció al joc ens afecta a tots com a país.",
+            question: "Per què qualificar 'la societat en general' com a públic prioritari és un error greu en relacions públiques?",
+            options: [
+              "Perquè les relacions públiques exigeixen segmentar i jerarquitzar públics específics segons la seva posició relacional i nivell de risc, adaptant el missatge a cadascun.",
+              "Perquè la fundació FadJuventud només té permès parlar amb menors d'edat.",
+              "Perquè és millor anomenar-ho 'públic massiu' en lloc de 'societat en general'."
+            ],
+            correct: 0,
+            explanation: "Les campanyes eficaces no es dirigeixen a masses abstractes. S'han de jerarquitzar públics prioritaris (nois 14-18 anys exposats), secundaris (famílies i docents) i intermediaris (mitjans de comunicació i prescriptors).",
+            corrected: "Públic Prioritari: Nois adolescents de 14 a 18 anys en entorn escolar o digital (prevalença de joc presencial del 29,5 % i major risc de joc problemàtic)."
+          },
+          {
+            quote: "Objectiu d'impacte 4 (Conatiu): Aconseguir que el Govern d'Espanya prohibeixi per llei tota la publicitat de jocs d'atzar en esdeveniments esportius durant els 8 mesos de campanya.",
+            question: "Per què aquest objectiu no és adequat per a un pla de relacions públiques institucionals d'una ONG?",
+            options: [
+              "Perquè els objectius conatius no s'apliquen als governs.",
+              "Perquè la comunicació pot influir o predisposar els legisladors, però no pot prometre l'aprovació d'una llei, ja que excedeix les seves competències i l'abast temporal.",
+              "Perquè la publicitat d'apostes ja està regulada i no es pot modificar."
+            ],
+            correct: 1,
+            explanation: "Un objectiu ha de ser assolible i realista dins la capacitat d'intervenció de les relacions públiques. No podem prometre decisions legislatives absolutes que depenen de tercers.",
+            corrected: "Incrementar la predisposició favorable dels portaveus parlamentaris de la Comissió de Sanitat i Joventut cap a la regulació de l'accés digital de menors al joc, aconseguint que almenys 3 grups parlamentaris incloguin les recomanacions de FadJuventud en les seves iniciatives abans de desembre de 2026."
+          }
+        ]
+      },
+      es: {
+        badge: "UOC · Grado de Comunicación",
+        mainTitle: "Reto 3 - Simulador de retos, objetivos y públicos",
+        subtitle: "Simulador de Auditoría Estratégica y Verificación Metodológica",
+        welcomeTitle: "Registro de inicio de la auditoría",
+        welcomeDesc: "Antes de iniciar el simulador, introduce tus datos de estudiante. Tus respuestas quedarán registradas para el equipo docente de la asignatura.",
+        lblName: "Nombre y apellidos *",
+        lblEmail: "Correo de la UOC *",
+        hintEmail: "Utiliza tu dirección institucional de la universidad (@uoc.edu).",
+        lblGroup: "Aula / Grupo de la asignatura *",
+        optSelectGroup: "Selecciona tu aula...",
+        btnStart: "Iniciar el Reto 3",
+        proposalTag: "Propuesta a auditar (Plan del estudiante)",
+        caseLabel: "Caso",
+        ofLabel: "de",
+        btnAudit: "Auditar respuesta",
+        btnNext: "Siguiente caso",
+        btnViewResults: "Ver resultados de la auditoría",
+        btnRestart: "Reiniciar simulador",
+        btnDownloadCsv: "Descargar informe CSV (Excel / Sheets)",
+        btnCopyTsv: "Copiar fila para Google Sheets",
+        copiedToast: "✓ ¡Fila copiada al portapapeles!",
+        syncSending: "Sincronizando tus resultados con el Google Sheet docente...",
+        syncSuccess: "✓ ¡Resultados registrados correctamente en el Google Sheet compartido del profesorado!",
+        syncFallback: "⚠️ Registro local completado. Puedes descargar el informe CSV o copiar los datos para el Google Sheet.",
+        btnTeacherSetup: "⚙️ Conexión Google Sheets (Docente)",
+        correctedLabel: "Versión Corregida Recomendada",
+        correctHeader: "¡Correcto! Auditoría acertada.",
+        incorrectHeader: "Incorrecto. Error detectado en la auditoría:",
+        resultsTitle: "Auditoría Finalizada con Éxito",
+        matrixTitle: "Matriz Resumen de Verificación Estratégica",
+        matrixSubtitle: "Criterios de auditoría permanente para la planificación en relaciones públicas:",
+        footerCourse: "Planificación Estratégica de las Relaciones Públicas",
+        footerCopyright: "Recurso de aprendizaje interactivo para LMS Canvas",
+        thDim: "Dimensión",
+        thRule: "Regla de Oro Metodológica",
+        thError: "Error Frecuente a Evitar",
+        thFormula: "Fórmula / Estructura Válida",
+        feedbackScoreExcellent: "¡Excelente criterio auditor! Dominas plenamente la diferencia entre metas, impactos, producción y segmentación.",
+        feedbackScoreGood: "Buen trabajo de auditoría. Revisa la matriz de verificación para pulir los matices entre acción del comunicador y efecto en el público.",
+        feedbackScoreReview: "Conviene repasar la teoría básica. Presta atención a no confundir objetivos de producción con efectos de impacto SMART.",
+        matrixRows: [
+          {
+            dim: "Meta Estratégica",
+            rule: "Sintetiza en una sola frase, en futuro simple, la condición última y abstracta de éxito de la organización.",
+            error: "Incluir listas de acciones (tácticas) o prometer resultados absolutos ('erradicar').",
+            formula: "[Sujeto/Entidad] + se consolidará como + [Estado deseado de excelencia/posicionamiento]"
+          },
+          {
+            dim: "Objetivos de Impacto (Outcomes)",
+            rule: "Miden el efecto que ocurre EN el público (nivel cognitivo, afectivo o conativo).",
+            error: "Usar verbos que indican tarea del comunicador (diseñar, lanzar, fomentar, promover).",
+            formula: "Infinitivo medible + Público específico + Métrica SMART + Plazo + Propósito ('para que')"
+          },
+          {
+            dim: "Objetivos de Producción (Outputs)",
+            rule: "Cuantifican las tareas y materiales realizados directamente por el equipo de relaciones públicas.",
+            error: "Confundir el esfuerzo y las publicaciones realizadas con el cambio de actitud o conducta social.",
+            formula: "Realizar / Difundir + [Número de piezas/acciones] + [Canal/Formato] + [Plazo]"
+          },
+          {
+            dim: "Segmentación de Públicos",
+            rule: "Jerarquización de colectivos vinculados por relación y riesgo (prioritarios, secundarios, intermediarios).",
+            error: "Recurrir a 'la sociedad en general' o masas amorfas sin contexto relacional.",
+            formula: "Grupo específico + Franja demográfica/Contexto + Nivel de riesgo o rol relacional"
+          }
+        ],
+        cases: [
+          {
+            quote: "Nuestra meta es erradicar el juego de azar en los jóvenes españoles mediante la realización de charlas en institutos, el diseño de folletos y la creación de un perfil de TikTok durante los 8 meses de campaña.",
+            question: "¿Por qué esta meta es incorrecta desde el punto de vista de la planificación estratégica de relaciones públicas?",
+            options: [
+              "Es correcta porque detalla las acciones que se llevarán a cabo en la campaña.",
+              "Es incorrecta porque es demasiado modesta para una campaña de 8 meses.",
+              "Es incorrecta porque confunde la meta con los objetivos de producción y promete un resultado que la comunicación no puede garantizar por sí sola."
+            ],
+            correct: 2,
+            explanation: "La meta debe sintetizar en una sola frase, en futuro simple, la condición última y abstracta a la que aspira el proyecto. No debe incluir listas de actividades (objetivos de producción) ni promesas absolutas como 'erradicar'.",
+            corrected: "FadJuventud se consolidará como la entidad de referencia en la protección de los menores frente a las adicciones comportamentales, logrando que el juego de azar sea percibido por los adolescentes españoles como una práctica de alto riesgo e incompatible con un ocio saludable."
+          },
+          {
+            quote: "Objetivo de impacto 1 (Cognitivo): Diseñar y difundir 50 infografías educativas en Instagram y TikTok sobre los riesgos de las apuestas deportivas para informar a los adolescentes.",
+            question: "¿Qué error metodológico comete este enunciado?",
+            options: [
+              "Ha redactado un objetivo de producción creyendo que es de impacto, respondiendo a lo que hace el comunicador y no al efecto en el público.",
+              "El único error es que le falta indicar el presupuesto necesario.",
+              "Está bien formulado porque incluye una cifra (50 infografías)."
+            ],
+            correct: 0,
+            explanation: "Diseñar y difundir contenidos son tareas ejecutivas del equipo de RR. PP. (objetivos de producción / outputs). El objetivo de impacto (outcome) mide lo que le ocurre al público (conocimiento, actitud o conducta).",
+            corrected: "Incrementar en un 30 % el conocimiento de los chicos adolescentes (14-18 años) sobre la nula rentabilidad estadística de las apuestas deportivas antes de noviembre de 2026, con el propósito de que reconozcan el juego como un gasto y no como una inversión."
+          },
+          {
+            quote: "Objetivo de impacto 2 (Afectivo): Fomentar una actitud crítica hacia las casas de apuestas entre los estudiantes de secundaria antes de diciembre de 2026.",
+            question: "¿Por qué la teoría de la asignatura desaconseja el uso del verbo 'fomentar' en los objetivos de impacto?",
+            options: [
+              "Porque es un verbo demasiado técnico para relaciones públicas.",
+              "Porque 'fomentar' alude a una acción que realiza el profesional y se dará por cumplida aunque el público no cambie su actitud.",
+              "Porque los objetivos afectivos solo pueden usar el verbo 'sensibilizar'."
+            ],
+            correct: 1,
+            explanation: "Verbos como fomentar, promover o propiciar enmascaran actividades del comunicador. Debe usarse un verbo que mida el resultado alcanzado en el público (ej. generar rechazo, reducir la percepción positiva).",
+            corrected: "Generar una actitud de rechazo o distancia crítica hacia la estética del dinero fácil en al menos el 35 % de los adolescentes varones antes de noviembre de 2026, con el propósito de desnormalizar las apuestas en su entorno de ocio."
+          },
+          {
+            quote: "Objetivo de impacto 3 (Conativo): Lograr que los adolescentes dejen de jugar a las tragaperras y ruletas online.",
+            question: "¿Qué elementos obligatorios faltan en esta redacción para que sea un objetivo estratégicamente válido y evaluable?",
+            options: [
+              "Le falta indicar la red social donde se publicará la campaña.",
+              "Le falta el propósito ('para qué'), la cuantificación/métrica SMART y la acotación temporal.",
+              "Está completo, ya que indica el verbo y el público."
+            ],
+            correct: 1,
+            explanation: "Cualquier objetivo de impacto debe cumplir la fórmula: Acción (Infinitivo) + Público + Propósito (Para qué) + Temporalización + Cuantificación (SMART).",
+            corrected: "Conseguir que al menos el 15 % de los adolescentes masculinos que juegan habitualmente reduzcan o abandonen el consumo de juego online durante el periodo de campaña (mayo-diciembre 2026), con el propósito de disminuir las conductas de riesgo."
+          },
+          {
+            quote: "Público prioritario del plan: La sociedad en general, porque la adicción al juego nos afecta a todos como país.",
+            question: "¿Por qué calificar a 'la sociedad en general' como público prioritario es un error grave en relaciones públicas?",
+            options: [
+              "Porque las relaciones públicas exigen segmentar y jerarquizar públicos específicos según su posición relacional y nivel de riesgo, adaptando el mensaje a cada uno.",
+              "Porque la fundación FadJuventud solo tiene permitido hablar con menores de edad.",
+              "Porque es mejor llamarlo 'público masivo' en lugar de 'sociedad en general'."
+            ],
+            correct: 0,
+            explanation: "Las campañas eficaces no se dirigen a masas abstractas. Se deben jerarquizar públicos prioritarios (chicos 14-18 años expuestos), secundarios (familias y docentes) e intermediarios (medios de comunicación y prescriptores).",
+            corrected: "Público Prioritario: Chicos adolescentes de 14 a 18 años en entorno escolar o digital (prevalencia de juego presencial del 29,5 % y mayor riesgo de juego problemático)."
+          },
+          {
+            quote: "Objetivo de impacto 4 (Conativo): Conseguir que el Gobierno de España prohíba por ley toda la publicidad de juegos de azar en eventos deportivos durante los 8 meses de campaña.",
+            question: "¿Por qué este objetivo no es adecuado para un plan de relaciones públicas institucionales de una ONG?",
+            options: [
+              "Porque los objetivos conativos no se aplican a los gobiernos.",
+              "Porque la comunicación puede influir o predisponer a los legisladores, pero no puede prometer la aprobación de una ley, ya que excede sus competencias y el alcance temporal.",
+              "Porque la publicidad de apuestas ya está regulada y no se puede modificar."
+            ],
+            correct: 1,
+            explanation: "Un objetivo debe ser alcanzable y realista dentro de la capacidad de intervención de las relaciones públicas. No podemos prometer decisiones legislativas absolutas que dependen de terceros.",
+            corrected: "Incrementar la predisposición favorable de los portavoces parlamentarios de la Comisión de Sanidad y Juventud hacia la regulación del acceso digital de menores al juego, logrando que al menos 3 grupos parlamentarios incluyan las recomendaciones de FadJuventud en sus iniciativas antes de diciembre de 2026."
+          }
+        ]
+      }
+    };
+
+    /* APP STATE */
+    const state = {
+      lang: 'cat',
+      student: {
+        name: '',
+        email: '',
+        group: ''
+      },
+      isRegistered: false,
+      currentIndex: 0,
+      userAnswers: [null, null, null, null, null, null],
+      isAudited: [false, false, false, false, false, false],
+      isFinished: false,
+      gasEndpoint: localStorage.getItem('uoc_pr_gas_url') || '',
+      syncStatus: 'idle'
+    };
+
+    /* INITIALIZATION */
+    window.addEventListener('DOMContentLoaded', () => {
+      renderAll();
+    });
+
+    /* LANGUAGE TOGGLE HANDLER */
+    function switchLanguage(targetLang) {
+      if (state.lang === targetLang) return;
+      state.lang = targetLang;
+
+      document.getElementById('btn-lang-cat').classList.toggle('active', targetLang === 'cat');
+      document.getElementById('btn-lang-es').classList.toggle('active', targetLang === 'es');
+      document.documentElement.lang = targetLang === 'cat' ? 'ca' : 'es';
+
+      renderAll();
+    }
+
+    /* RENDER CONTROLLER */
+    function renderAll() {
+      const t = translations[state.lang];
+
+      document.title = `${t.mainTitle} | UOC`;
+
+      // Header Texts
+      document.getElementById('badge-text').textContent = t.badge;
+      document.getElementById('ui-main-title').textContent = t.mainTitle;
+      document.getElementById('ui-subtitle').textContent = t.subtitle;
+      document.getElementById('ui-proposal-tag').textContent = t.proposalTag;
+      document.getElementById('ui-correction-label').textContent = t.correctedLabel;
+      document.getElementById('footer-course').textContent = t.footerCourse;
+      document.getElementById('footer-copyright').textContent = t.footerCopyright;
+      document.getElementById('btn-teacher-setup').textContent = t.btnTeacherSetup;
+
+      // Welcome Screen Texts
+      document.getElementById('welcome-title').textContent = t.welcomeTitle;
+      document.getElementById('welcome-desc').textContent = t.welcomeDesc;
+      document.getElementById('lbl-name').textContent = t.lblName;
+      document.getElementById('lbl-email').textContent = t.lblEmail;
+      document.getElementById('hint-email').textContent = t.hintEmail;
+      document.getElementById('lbl-group').textContent = t.lblGroup;
+      document.getElementById('opt-select-group').textContent = t.optSelectGroup;
+      document.getElementById('btn-start').querySelector('span').textContent = t.btnStart;
+
+      // Result screen sync buttons
+      document.getElementById('btn-download-csv').textContent = t.btnDownloadCsv;
+      document.getElementById('btn-copy-tsv').textContent = t.btnCopyTsv;
+
+      // Table Headers
+      document.getElementById('th-dim').textContent = t.thDim;
+      document.getElementById('th-rule').textContent = t.thRule;
+      document.getElementById('th-error').textContent = t.thError;
+      document.getElementById('th-formula').textContent = t.thFormula;
+      document.getElementById('ui-matrix-title').textContent = t.matrixTitle;
+      document.getElementById('ui-matrix-subtitle').textContent = t.matrixSubtitle;
+      document.getElementById('ui-btn-restart').textContent = t.btnRestart;
+
+      // Switch views based on state
+      const welcomeView = document.getElementById('welcome-view');
+      const caseView = document.getElementById('case-view');
+      const resultsView = document.getElementById('results-view');
+      const progressContainer = document.getElementById('progress-container');
+      const studentBar = document.getElementById('student-info-bar');
+
+      if (!state.isRegistered) {
+        welcomeView.style.display = 'block';
+        caseView.style.display = 'none';
+        resultsView.classList.remove('show');
+        progressContainer.style.display = 'none';
+        studentBar.classList.remove('show');
+      } else if (!state.isFinished) {
+        welcomeView.style.display = 'none';
+        caseView.style.display = 'flex';
+        resultsView.classList.remove('show');
+        progressContainer.style.display = 'block';
+        studentBar.classList.add('show');
+        document.getElementById('student-name-display').textContent = state.student.name;
+        document.getElementById('student-group-display').textContent = state.student.group;
+        document.getElementById('student-email-display').textContent = state.student.email;
+        renderCurrentCase();
+      } else {
+        welcomeView.style.display = 'none';
+        caseView.style.display = 'none';
+        resultsView.classList.add('show');
+        progressContainer.style.display = 'none';
+        studentBar.classList.add('show');
+        renderResultsView();
+      }
+    }
+
+    /* INICI DE SIMULACIÓ AMB DADES D'ESTUDIANT */
+    function handleStartSimulation(event) {
+      event.preventDefault();
+      const name = document.getElementById('inp-student-name').value.trim();
+      const email = document.getElementById('inp-student-email').value.trim();
+      const group = document.getElementById('inp-student-group').value;
+
+      if (!name || !email || !group) return;
+
+      state.student.name = name;
+      state.student.email = email;
+      state.student.group = group;
+      state.isRegistered = true;
+
+      renderAll();
+    }
+
+    /* RENDER SINGLE CASE */
+    function renderCurrentCase() {
+      const t = translations[state.lang];
+      const caseData = t.cases[state.currentIndex];
+      const totalCases = t.cases.length;
+      const audited = state.isAudited[state.currentIndex];
+      const selectedOption = state.userAnswers[state.currentIndex];
+
+      // Update Progress
+      const currentNum = state.currentIndex + 1;
+      const pct = Math.round((currentNum / totalCases) * 100);
+      document.getElementById('progress-text').textContent = `${t.caseLabel} ${currentNum} ${t.ofLabel} ${totalCases}`;
+      document.getElementById('progress-percentage').textContent = `${pct}%`;
+      document.getElementById('progress-fill-bar').style.width = `${pct}%`;
+      const ariaBar = document.getElementById('aria-progress');
+      ariaBar.setAttribute('aria-valuenow', pct);
+
+      // Quote & Question
+      document.getElementById('case-quote').textContent = `"${caseData.quote}"`;
+      document.getElementById('case-question').textContent = caseData.question;
+
+      // Render Options
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+
+      const letters = ['A', 'B', 'C'];
+      caseData.options.forEach((optText, index) => {
+        const optionItem = document.createElement('label');
+        optionItem.className = 'option-item';
+        if (audited) {
+          optionItem.classList.add('disabled');
+        }
+        if (selectedOption === index) {
+          optionItem.classList.add('selected');
+        }
+
+        const inputRadio = document.createElement('input');
+        inputRadio.type = 'radio';
+        inputRadio.name = `case-opt-${state.currentIndex}`;
+        inputRadio.value = index;
+        inputRadio.checked = selectedOption === index;
+        inputRadio.disabled = audited;
+        inputRadio.setAttribute('aria-label', `Opció ${letters[index]}`);
+
+        inputRadio.addEventListener('change', () => {
+          if (!state.isAudited[state.currentIndex]) {
+            state.userAnswers[state.currentIndex] = index;
+            document.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
+            optionItem.classList.add('selected');
+            document.getElementById('btn-next-action').disabled = false;
+          }
+        });
+
+        const spanLabel = document.createElement('span');
+        spanLabel.className = 'option-label';
+        spanLabel.innerHTML = `<span class="option-letter">${letters[index]})</span> ${optText}`;
+
+        optionItem.appendChild(inputRadio);
+        optionItem.appendChild(spanLabel);
+        optionsContainer.appendChild(optionItem);
+      });
+
+      // Feedback Panel state
+      const feedbackPanel = document.getElementById('feedback-panel');
+      const actionBtn = document.getElementById('btn-next-action');
+      const actionText = document.getElementById('btn-action-text');
+
+      if (audited) {
+        feedbackPanel.classList.add('show');
+        const isCorrect = selectedOption === caseData.correct;
+
+        feedbackPanel.className = `feedback-card show ${isCorrect ? 'correct' : 'incorrect'}`;
+        
+        document.getElementById('feedback-title').innerHTML = isCorrect
+          ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> ${t.correctHeader}`
+          : `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg> ${t.incorrectHeader}`;
+
+        document.getElementById('feedback-desc').textContent = caseData.explanation;
+        document.getElementById('feedback-correction').textContent = caseData.corrected;
+
+        actionBtn.disabled = false;
+        if (state.currentIndex === totalCases - 1) {
+          actionText.textContent = t.btnViewResults;
+        } else {
+          actionText.textContent = t.btnNext;
+        }
+      } else {
+        feedbackPanel.classList.remove('show');
+        actionText.textContent = t.btnAudit;
+        actionBtn.disabled = selectedOption === null;
+      }
+    }
+
+    /* ACTION BUTTON LOGIC */
+    function handlePrimaryAction() {
+      const isAuditedNow = state.isAudited[state.currentIndex];
+      const totalCases = translations[state.lang].cases.length;
+
+      if (!isAuditedNow) {
+        if (state.userAnswers[state.currentIndex] === null) return;
+        state.isAudited[state.currentIndex] = true;
+        renderCurrentCase();
+      } else {
+        if (state.currentIndex < totalCases - 1) {
+          state.currentIndex++;
+          renderCurrentCase();
+        } else {
+          state.isFinished = true;
+          renderAll();
+          sendDataToGoogleSheet();
+        }
+      }
+    }
+
+    /* RENDER RESULTS SCREEN */
+    function renderResultsView() {
+      const t = translations[state.lang];
+      const totalCases = t.cases.length;
+      let correctCount = 0;
+
+      t.cases.forEach((c, idx) => {
+        if (state.userAnswers[idx] === c.correct) {
+          correctCount++;
+        }
+      });
+
+      document.getElementById('score-number').textContent = `${correctCount}/${totalCases}`;
+      document.getElementById('ui-results-title').textContent = t.resultsTitle;
+
+      const commentEl = document.getElementById('score-comment');
+      if (correctCount === totalCases) {
+        commentEl.textContent = t.feedbackScoreExcellent;
+      } else if (correctCount >= 4) {
+        commentEl.textContent = t.feedbackScoreGood;
+      } else {
+        commentEl.textContent = t.feedbackScoreReview;
+      }
+
+      // Populate Matrix Table
+      const matrixTbody = document.getElementById('matrix-body');
+      matrixTbody.innerHTML = '';
+
+      t.matrixRows.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><span class="pill-dimension">${row.dim}</span></td>
+          <td>${row.rule}</td>
+          <td style="color: var(--color-error); font-weight: 600;">${row.error}</td>
+          <td><span class="pill-formula">${row.formula}</span></td>
+        `;
+        matrixTbody.appendChild(tr);
+      });
+    }
+
+    /* ENVIAMENT AL GOOGLE SHEET MITJANÇANT GOOGLE APPS SCRIPT */
+    function sendDataToGoogleSheet() {
+      const t = translations[state.lang];
+      const banner = document.getElementById('sync-status-banner');
+      const message = document.getElementById('sync-message');
+      const spinner = document.getElementById('sync-spinner');
+
+      const letters = ['A', 'B', 'C'];
+      const answersSummary = state.userAnswers.map((ans, idx) => {
+        const isOk = ans === translations.cat.cases[idx].correct;
+        return `Opció ${letters[ans]} (${isOk ? 'OK' : 'ERR'})`;
+      });
+
+      const totalCorrect = state.userAnswers.filter((ans, idx) => ans === translations.cat.cases[idx].correct).length;
+      const payload = {
+        timestamp: new Date().toLocaleString('ca-ES'),
+        studentName: state.student.name,
+        studentEmail: state.student.email,
+        studentGroup: state.student.group,
+        score: `${totalCorrect}/6`,
+        answers: answersSummary
+      };
+
+      if (state.gasEndpoint && state.gasEndpoint.startsWith('http')) {
+        banner.className = 'sync-status-box sync-loading';
+        spinner.style.display = 'block';
+        message.textContent = t.syncSending;
+
+        fetch(state.gasEndpoint, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        .then(() => {
+          banner.className = 'sync-status-box sync-success';
+          spinner.style.display = 'none';
+          message.textContent = t.syncSuccess;
+        })
+        .catch(() => {
+          banner.className = 'sync-status-box sync-fallback';
+          spinner.style.display = 'none';
+          message.textContent = t.syncFallback;
+        });
+      } else {
+        banner.className = 'sync-status-box sync-fallback';
+        spinner.style.display = 'none';
+        message.textContent = t.syncFallback;
+      }
+    }
+
+    /* DESCARREGAR INFORME CSV DIRECTE PER A GOOGLE SHEETS / EXCEL */
+    function downloadCSVReport() {
+      const letters = ['A', 'B', 'C'];
+      const totalCorrect = state.userAnswers.filter((ans, idx) => ans === translations.cat.cases[idx].correct).length;
+      const headers = ["Data", "Nom i Cognoms", "Correu UOC", "Aula/Grup", "Puntuació", "Cas 1", "Cas 2", "Cas 3", "Cas 4", "Cas 5", "Cas 6"];
+      const row = [
+        `"${new Date().toLocaleString('ca-ES')}"`,
+        `"${state.student.name}"`,
+        `"${state.student.email}"`,
+        `"${state.student.group}"`,
+        `"${totalCorrect}/6"`,
+        ...state.userAnswers.map((ans, i) => `"${letters[ans]} (${ans === translations.cat.cases[i].correct ? 'OK' : 'ERR'})"`)
+      ];
+
+      const csvContent = "\uFEFF" + headers.join(",") + "\n" + row.join(",");
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Repte3_${state.student.name.replace(/\s+/g, '_')}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    /* COPIAR LÍNIA TABULADA PER ENGANXAR DIRECTAMENT EN GOOGLE SHEETS */
+    function copyDataForSheet() {
+      const letters = ['A', 'B', 'C'];
+      const totalCorrect = state.userAnswers.filter((ans, idx) => ans === translations.cat.cases[idx].correct).length;
+      const values = [
+        new Date().toLocaleString('ca-ES'),
+        state.student.name,
+        state.student.email,
+        state.student.group,
+        `${totalCorrect}/6`,
+        ...state.userAnswers.map((ans, i) => `${letters[ans]} (${ans === translations.cat.cases[i].correct ? 'OK' : 'ERR'})`)
+      ];
+
+      const tsv = values.join("\t");
+      const tempTextarea = document.createElement('textarea');
+      tempTextarea.value = tsv;
+      document.body.appendChild(tempTextarea);
+      tempTextarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempTextarea);
+
+      const t = translations[state.lang];
+      const copyBtn = document.getElementById('btn-copy-tsv');
+      const originalText = copyBtn.textContent;
+      copyBtn.textContent = t.copiedToast;
+      setTimeout(() => {
+        copyBtn.textContent = originalText;
+      }, 2500);
+    }
+
+    /* MODAL DOCENT */
+    function openTeacherModal() {
+      document.getElementById('teacher-modal').classList.add('open');
+      document.getElementById('inp-gas-url').value = state.gasEndpoint || '';
+    }
+
+    function closeTeacherModal() {
+      document.getElementById('teacher-modal').classList.remove('open');
+    }
+
+    function saveGasUrl() {
+      const url = document.getElementById('inp-gas-url').value.trim();
+      state.gasEndpoint = url;
+      localStorage.setItem('uoc_pr_gas_url', url);
+      closeTeacherModal();
+      if (state.isFinished) {
+        sendDataToGoogleSheet();
+      }
+    }
+
+    /* RESTART SIMULATOR */
+    function restartSimulator() {
+      state.currentIndex = 0;
+      state.userAnswers = [null, null, null, null, null, null];
+      state.isAudited = [false, false, false, false, false, false];
+      state.isFinished = false;
+      renderAll();
+    }
+  </script>
+</body>
+</html>
